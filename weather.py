@@ -8,6 +8,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 app = Flask(__name__)
 
 # Настройки API
+API_KEY = ''
 WEATHER_API_KEY = ''
 WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather'
 UPDATE_INTERVAL = 3600  # в секундах
@@ -89,6 +90,10 @@ def parse_weather_json(raw_json):
 # === ОБРАБОТКА ЗАПРОСОВ ===
 @app.route('/weather', methods=['POST'])
 def handle_request():
+    client_key = request.headers.get("Authorization")
+    if client_key != API_KEY:
+        return jsonify({"error": "Unauthorized"}), 401
+        
     data = request.get_json()
     lat = data.get('lat')
     lon = data.get('lon')
