@@ -113,7 +113,10 @@ def handle_request():
         c.execute('SELECT weather_json, last_updated FROM locations WHERE location_key = ?', (key,))
         row = c.fetchone()
 
-        if row:
+        current_time = int(time.time())
+
+
+        if row and (current_time - row[1] < UPDATE_INTERVAL):
             weather_data = parse_weather_json(row[0])
             return jsonify({
                 'status': 'ok',
